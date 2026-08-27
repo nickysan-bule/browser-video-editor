@@ -1,0 +1,147 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  color: #222;
+}
+
+.progressBar {
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #0066cc, #0052a3);
+  transition: width 300ms ease-out;
+}
+
+.stepInfo {
+  margin-bottom: 1rem;
+}
+
+.stepLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+}
+
+.stepDescription {
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+}
+
+.timing {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.timingRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 0.5rem;
+}
+
+.timingRow:last-child {
+  margin-bottom: 0;
+}
+
+.timingLabel {
+  color: #666;
+}
+
+.timingValue {
+  font-weight: 600;
+  color: #0066cc;
+  font-family: 'Monaco', 'Courier New', monospace;
+}
+
+.status {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  margin: 1rem 0;
+  line-height: 1.6;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #f0f0f0;
+  border-top: 2px solid #0066cc;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 1rem auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.cancelButton {
+  width: 100%;
+  padding: 10px;
+  margin-top: 1rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.cancelButton:hover {
+  border-color: #999;
+  background: #fafafa;
+}
+
+@media (max-width: 640px) {
+  .modal {
+    padding: 1.5rem;
+  }
+
+  .title {
+    font-size: 16px;
+  }
+}

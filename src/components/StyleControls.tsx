@@ -1,4 +1,3 @@
-import React from 'react';
 import { CaptionStyle } from '../utils/videoUtils';
 import styles from '../App.module.css';
 

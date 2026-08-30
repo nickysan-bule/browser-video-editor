@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import {
@@ -15,7 +15,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { VideoClip, CaptionStyle, getClipDuration, buildSRTManifest, buildFFmpegStyleParam } from './utils/videoUtils';
 import { validateClipFile, validateTotalSize, validateExport } from './utils/validation';
 import { checkBrowserCapabilities } from './utils/browserCheck';
-import { estimateProcessingTime, getProcessingSteps } from './utils/timing';
+import { estimateProcessingTime } from './utils/timing';
 
 import { UploadZone } from './components/UploadZone';
 import { StyleControls } from './components/StyleControls';
@@ -53,7 +53,6 @@ export default function App() {
   });
 
   const ffmpegRef = useRef<FFmpeg | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
   const processingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const sensors = useSensors(
@@ -61,7 +60,6 @@ export default function App() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // Check browser capabilities on mount
   useEffect(() => {
     const capabilities = checkBrowserCapabilities();
     if (!capabilities.canProcessVideo) {
@@ -69,7 +67,6 @@ export default function App() {
     }
   }, []);
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (processingTimerRef.current) {
@@ -81,7 +78,6 @@ export default function App() {
   const handleFileUpload = async (files: File[]) => {
     setError('');
 
-    // Validate each file
     const validatedFiles: File[] = [];
     for (const file of files) {
       const validation = validateClipFile(file);
@@ -92,7 +88,6 @@ export default function App() {
       validatedFiles.push(file);
     }
 
-    // Validate total size
     const allFiles = [...clips.map((c) => c.file), ...validatedFiles];
     const sizeValidation = validateTotalSize(allFiles);
     if (!sizeValidation.valid) {
@@ -100,7 +95,6 @@ export default function App() {
       return;
     }
 
-    // Process files
     for (const file of validatedFiles) {
       try {
         const duration = await getClipDuration(file);
@@ -140,9 +134,6 @@ export default function App() {
   };
 
   const updateProgress = (step: number, status: string) => {
-    const elapsed = Date.now() - processing.startTime;
-    const elapsedSeconds = elapsed / 1000;
-
     setProcessing((prev) => ({
       ...prev,
       currentStep: step,
@@ -152,7 +143,7 @@ export default function App() {
   };
 
   const initFFmpeg = async (): Promise<FFmpeg> => {
-    if (ffmpegRef.current && ffmpegRef.current.isLoaded()) {
+    if (ffmpegRef.current) {
       return ffmpegRef.current;
     }
 
@@ -218,15 +209,15 @@ export default function App() {
     updateProgress(3, 'Finalizing...');
 
     const data = await ffmpeg.readFile('render_output.mp4');
+    const videoData = data instanceof ArrayBuffer ? data : data.buffer;
     const url = URL.createObjectURL(
-      new Blob([data.buffer], { type: 'video/mp4' })
+      new Blob([videoData], { type: 'video/mp4' })
     );
 
     return url;
   };
 
   const processVideo = async () => {
-    // Validate before processing
     const validation = validateExport(clips, clips.length > 0);
     if (!validation.valid) {
       setError(validation.error || 'Cannot export');
@@ -240,7 +231,6 @@ export default function App() {
       return;
     }
 
-    // Prevent double-click
     if (processing.isLoading) return;
 
     setError('');
@@ -258,11 +248,9 @@ export default function App() {
       canCancel: true,
     });
 
-    // Start progress timer
     processingTimerRef.current = setInterval(() => {
       setProcessing((prev) => {
         if (!prev.isLoading) return prev;
-        const elapsed = (Date.now() - prev.startTime) / 1000;
         return { ...prev };
       });
     }, 100);
@@ -287,9 +275,6 @@ export default function App() {
   };
 
   const handleCancel = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
     setProcessing((prev) => ({ ...prev, isLoading: false }));
     setError('Cancelled by user');
   };

@@ -1,11 +1,10 @@
-import React from 'react';
 import { formatTime, getStepEstimate } from '../utils/timing';
 import styles from './ProgressOverlay.module.css';
 
 interface ProgressOverlayProps {
   isVisible: boolean;
-  currentStep: number; // 1, 2, 3
-  totalSteps: number; // 3
+  currentStep: number;
+  totalSteps: number;
   status: string;
   estimatedTotalSeconds: number;
   elapsedSeconds: number;
@@ -26,7 +25,7 @@ export const ProgressOverlay: React.FC<ProgressOverlayProps> = ({
   const progressPercent = Math.min(
     (elapsedSeconds / estimatedTotalSeconds) * 100,
     95
-  ); // cap at 95% until done
+  );
 
   const stepInfo = getStepEstimate(currentStep, estimatedTotalSeconds);
   const timeRemaining = Math.max(0, estimatedTotalSeconds - elapsedSeconds);

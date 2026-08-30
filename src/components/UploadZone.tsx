@@ -1,4 +1,3 @@
-import React from 'react';
 import { validateClipFile } from '../utils/validation';
 import styles from '../App.module.css';
 
@@ -21,13 +20,10 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
     const files = Array.from(e.target.files);
     const validFiles: File[] = [];
 
-    // Validate each file
     for (const file of files) {
       const validation = validateClipFile(file);
       if (!validation.valid) {
         console.warn(validation.error);
-        // In a real app, you'd show this error to the user
-        // For now, we skip invalid files
         continue;
       }
       validFiles.push(file);
@@ -37,7 +33,6 @@ export const UploadZone: React.FC<UploadZoneProps> = ({
       onFilesSelected(validFiles);
     }
 
-    // Reset input so same file can be selected again
     e.target.value = '';
   };
 

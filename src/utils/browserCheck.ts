@@ -7,7 +7,8 @@ export interface BrowserCapabilities {
 
 export const checkBrowserCapabilities = (): BrowserCapabilities => {
   const supportsWasm =
-    typeof WebAssembly !== 'undefined' && WebAssembly.validate;
+    typeof WebAssembly !== 'undefined' && 
+    typeof WebAssembly.validate === 'function';
 
   const supportsSharedArrayBuffer =
     typeof SharedArrayBuffer !== 'undefined';

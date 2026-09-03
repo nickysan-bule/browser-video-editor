@@ -209,9 +209,19 @@ export default function App() {
     updateProgress(3, 'Finalizing...');
 
     const data = await ffmpeg.readFile('render_output.mp4');
-    const videoData = data instanceof ArrayBuffer ? data : data.buffer;
+    
+    // Handle both ArrayBuffer and Uint8Array responses from FFmpeg
+    let videoBuffer: ArrayBuffer;
+    if (data instanceof ArrayBuffer) {
+      videoBuffer = data;
+    } else if (data instanceof Uint8Array) {
+      videoBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+    } else {
+      throw new Error('Unexpected data format from FFmpeg');
+    }
+
     const url = URL.createObjectURL(
-      new Blob([videoData], { type: 'video/mp4' })
+      new Blob([videoBuffer], { type: 'video/mp4' })
     );
 
     return url;
@@ -369,9 +379,7 @@ export default function App() {
         currentStep={processing.currentStep}
         totalSteps={3}
         status={processing.status}
-        estimatedTotalSeconds={estimateProcessingTime(
-          clips.reduce((sum, c) => sum + c.duration, 0)
-        )}
+        estimatedTotalSeconds={estimatedSeconds}
         elapsedSeconds={(Date.now() - processing.startTime) / 1000}
         onCancel={handleCancel}
       />
